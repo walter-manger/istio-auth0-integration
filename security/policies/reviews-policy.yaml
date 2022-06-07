@@ -1,14 +1,14 @@
 apiVersion: "security.istio.io/v1beta1"
 kind: "AuthorizationPolicy"
 metadata:
-  name: "mods-access-reviews"
+  name: "reviews-policy"
   namespace: demo
 spec:
-  action: DENY
+  action: ALLOW
   selector:
     matchLabels:
       app: reviews
   rules:
   - when:
-    - key: request.auth.claims[https://bookinfo.io/group]
-      notValues: ["moderator"]
+    - key: request.auth.claims[permissions]
+      values: ["read:book-reviews"]
