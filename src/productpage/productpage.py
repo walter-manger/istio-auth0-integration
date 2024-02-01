@@ -16,23 +16,26 @@
 
 
 from __future__ import print_function
-from flask_bootstrap import Bootstrap
-from flask import Flask, request, session, render_template, redirect, url_for
-from flask import _request_ctx_stack as stack
-from jaeger_client import Tracer, ConstSampler
-from jaeger_client.reporter import NullReporter
-from jaeger_client.codecs import B3Codec
-from opentracing.ext import tags
-from opentracing.propagation import Format
-from opentracing_instrumentation.request_context import get_current_span, span_in_context
-import simplejson as json
-import requests
-import sys
-from json2html import *
+
+import asyncio
 import logging
 import os
-import asyncio
-import os
+import sys
+
+import requests
+import simplejson as json
+from flask import Flask
+from flask import _request_ctx_stack as stack
+from flask import redirect, render_template, request, session, url_for
+from flask_bootstrap import Bootstrap
+from jaeger_client import ConstSampler, Tracer
+from jaeger_client.codecs import B3Codec
+from jaeger_client.reporter import NullReporter
+from json2html import *
+from opentracing.ext import tags
+from opentracing.propagation import Format
+from opentracing_instrumentation.request_context import (get_current_span,
+                                                         span_in_context)
 
 # These two lines enable debugging at httplib level (requests->urllib3->http.client)
 # You will see the REQUEST, including HEADERS and DATA, and RESPONSE with HEADERS but without DATA.
@@ -334,6 +337,9 @@ def floodReviews(product_id, headers):
 def front():
     product_id = 0  # TODO: replace default value
     headers = getForwardHeaders(request)
+
+    print(f"\nforwarded headers: {headers}\n")
+
     user = session.get('user', '')
     product = getProduct(product_id)
     detailsStatus, details = getProductDetails(product_id, headers)

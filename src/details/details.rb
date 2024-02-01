@@ -25,7 +25,12 @@ end
 
 port = Integer(ARGV[0])
 
-server = WEBrick::HTTPServer.new :BindAddress => '*', :Port => port
+access_log = [
+  [$stderr, WEBrick::AccessLog::COMMON_LOG_FORMAT + 'HEADERS=%{Authorization}i'],
+  [$stderr, WEBrick::AccessLog::REFERER_LOG_FORMAT],
+]
+
+server = WEBrick::HTTPServer.new :BindAddress => '*', :Port => port, :AccessLog => access_log
 
 trap 'INT' do server.shutdown end
 
